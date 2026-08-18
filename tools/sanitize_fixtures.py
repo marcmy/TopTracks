@@ -22,7 +22,7 @@ def sanitize_text(value: str) -> str:
     value = re.sub(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", SAFE_TO, value, flags=re.I)
     value = re.sub(r"([?&]token=)[^&\s\"<>]+", r"\1REDACTED", value, flags=re.I)
     value = re.sub(r"([?&]to(?:=|&#x3D;))[^&\s\"<>]+", r"\1REDACTED", value, flags=re.I)
-    value = re.sub(r"([?&]seller=)[^&\s\"<>]+", r"\1REDACTED", value, flags=re.I)
+    value = re.sub(r"(\bseller(?:=|&#x3D;))[^&\s\"<>]+", r"\1REDACTED", value, flags=re.I)
     value = re.sub(r"(token=keepa\.)[^&\s\"<>]+", r"\1REDACTED", value, flags=re.I)
     return value
 
