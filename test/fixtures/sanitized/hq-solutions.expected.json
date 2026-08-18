@@ -1,0 +1,28 @@
+{
+  "parsed": {
+    "receivedAt": "2026-08-18T04:35:31.000Z",
+    "subject": "✜ Price alert: HQ Solutions: Resource for the Healthcare Quality ...",
+    "title": "HQ Solutions: Resource for the Healthcare Quality Professional",
+    "asin": "1496389778",
+    "amazonUrl": "https://www.amazon.com/dp/1496389778",
+    "offers": [
+      {
+        "condition": "Used, very good",
+        "currentPrice": 96.27,
+        "desiredPrice": 134.0,
+        "keepaDifference": -37.73,
+        "cause": "Price changed after desired price"
+      },
+      {
+        "condition": "Used, good",
+        "currentPrice": 96.27,
+        "desiredPrice": 134.0,
+        "keepaDifference": -37.73,
+        "cause": "Price changed after desired price"
+      }
+    ]
+  },
+  "bestOfferIndex": 0,
+  "tier": "Strong",
+  "bestOfferPercentBelowMax": 28.15671641791045
+}
