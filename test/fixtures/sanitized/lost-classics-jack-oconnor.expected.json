@@ -1,0 +1,21 @@
+{
+  "parsed": {
+    "receivedAt": "2026-08-18T05:19:02.000Z",
+    "subject": "✜ Price alert $ 24.37: The Lost Classics of Jack O'Connor: Forty Exciting...",
+    "title": "The Lost Classics of Jack O'Connor: Forty Exciting Stories from the Pages of Outdoor Life",
+    "asin": "0966021231",
+    "amazonUrl": "https://www.amazon.com/dp/0966021231",
+    "offers": [
+      {
+        "condition": "Used, very good",
+        "currentPrice": 24.37,
+        "desiredPrice": 30.0,
+        "keepaDifference": -5.63,
+        "cause": "Price changed after desired price"
+      }
+    ]
+  },
+  "bestOfferIndex": 0,
+  "tier": "Moderate",
+  "bestOfferPercentBelowMax": 18.766666666666662
+}
