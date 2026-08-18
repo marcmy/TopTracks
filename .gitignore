@@ -1,0 +1,9 @@
+.clasp.json
+node_modules/
+coverage/
+.DS_Store
+
+# Raw Keepa emails may contain Douglas's address, account tokens, routing metadata,
+# and personalized tracking/unsubscribe URLs. Never commit them.
+test/fixtures/private/*
+!test/fixtures/private/.gitkeep

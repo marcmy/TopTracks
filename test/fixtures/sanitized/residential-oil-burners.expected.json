@@ -1,0 +1,28 @@
+{
+  "parsed": {
+    "receivedAt": "2026-08-18T04:36:21.000Z",
+    "subject": "✜ Price alert: Residential Oil Burners",
+    "title": "Residential Oil Burners",
+    "asin": "1418073970",
+    "amazonUrl": "https://www.amazon.com/dp/1418073970",
+    "offers": [
+      {
+        "condition": "Used, very good",
+        "currentPrice": 65.52,
+        "desiredPrice": 75.0,
+        "keepaDifference": -9.48,
+        "cause": "Price changed after desired price"
+      },
+      {
+        "condition": "Used, good",
+        "currentPrice": 65.49,
+        "desiredPrice": 75.0,
+        "keepaDifference": -9.51,
+        "cause": "Price changed after desired price"
+      }
+    ]
+  },
+  "bestOfferIndex": 1,
+  "tier": "Moderate",
+  "bestOfferPercentBelowMax": 12.680000000000009
+}

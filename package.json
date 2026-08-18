@@ -1,0 +1,12 @@
+{
+  "name": "toptracks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Classify Keepa Gmail price alerts by percentage below Douglas's desired maximum price.",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
