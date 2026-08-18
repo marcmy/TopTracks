@@ -1,0 +1,21 @@
+{
+  "parsed": {
+    "receivedAt": "2026-08-18T04:37:41.000Z",
+    "subject": "✜ Price alert $ 22.91: The Boy Who Sailed Around the World Alone",
+    "title": "The Boy Who Sailed Around the World Alone",
+    "asin": "0307165108",
+    "amazonUrl": "https://www.amazon.com/dp/0307165108",
+    "offers": [
+      {
+        "condition": "New, 3rd Party FBA",
+        "currentPrice": 22.91,
+        "desiredPrice": 25.0,
+        "keepaDifference": -2.09,
+        "cause": "Desired price reached"
+      }
+    ]
+  },
+  "bestOfferIndex": 0,
+  "tier": "Marginal",
+  "bestOfferPercentBelowMax": 8.36
+}
