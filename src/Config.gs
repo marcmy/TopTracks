@@ -12,6 +12,13 @@ var TOPTRACKS_CONFIG = Object.freeze({
     maxResults: 50,
     lockTimeoutMs: 1000
   }),
+  sheet: Object.freeze({
+    enabled: true,
+    spreadsheetName: 'TopTracks',
+    mainSheetName: 'TopTracks',
+    bestDealsSheetName: 'Best Deals',
+    spreadsheetIdProperty: 'TOPTRACKS_SHEET_ID'
+  }),
   labels: Object.freeze({
     parent: Object.freeze({
       name: 'TopTracks',
@@ -71,7 +78,8 @@ var TopTracksConfig = (function () {
     starExceptional: 'TOPTRACKS_STAR_EXCEPTIONAL',
     starStrong: 'TOPTRACKS_STAR_STRONG',
     gmailQuery: 'TOPTRACKS_GMAIL_QUERY',
-    maxResults: 'TOPTRACKS_MAX_RESULTS'
+    maxResults: 'TOPTRACKS_MAX_RESULTS',
+    sheetLoggingEnabled: 'TOPTRACKS_SHEET_LOGGING_ENABLED'
   });
 
   function copyLabels(labels) {
@@ -149,6 +157,16 @@ var TopTracksConfig = (function () {
         query: properties[PROPERTY_NAMES.gmailQuery] || TOPTRACKS_CONFIG.gmail.query,
         maxResults: Math.floor(maxResults),
         lockTimeoutMs: TOPTRACKS_CONFIG.gmail.lockTimeoutMs
+      },
+      sheet: {
+        enabled: parseBoolean(
+          properties[PROPERTY_NAMES.sheetLoggingEnabled],
+          TOPTRACKS_CONFIG.sheet.enabled
+        ),
+        spreadsheetName: TOPTRACKS_CONFIG.sheet.spreadsheetName,
+        mainSheetName: TOPTRACKS_CONFIG.sheet.mainSheetName,
+        bestDealsSheetName: TOPTRACKS_CONFIG.sheet.bestDealsSheetName,
+        spreadsheetIdProperty: TOPTRACKS_CONFIG.sheet.spreadsheetIdProperty
       },
       labels: copyLabels(TOPTRACKS_CONFIG.labels)
     };
