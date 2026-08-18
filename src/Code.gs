@@ -10,10 +10,12 @@ function topTracksHealthCheck() {
     });
   }
 
+  var config = TopTracksConfig.get();
   return {
     status: 'ok',
-    phase: 'gmail-processing',
+    phase: 'mvp',
     liveProcessingAvailable: true,
+    sheetLoggingEnabled: config.sheet.enabled,
     triggerInstalled: triggerInstalled
   };
 }
