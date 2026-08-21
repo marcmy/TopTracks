@@ -18,7 +18,7 @@ The repository contains a production Apps Script implementation with:
 - fixture-driven Keepa HTML parsing with multiple offers per email;
 - fail-closed Current / Desired / Difference validation;
 - configurable scoring based primarily on percentage below max;
-- colored Gmail tier labels and hidden `TopTracks/Processed` exact-once state;
+- compact colored Gmail tier tags and hidden `TopTracks/Processed` exact-once state;
 - retry-safe one-minute Gmail processing with an Apps Script script lock;
 - one reusable `TopTracks` Google Sheet containing parsed offer history;
 - a `Best Deals` tab containing Strong/Exceptional winning offers;
@@ -30,16 +30,21 @@ mailbox exports are stored in this public repository.
 
 ## Gmail labels
 
-TopTracks provisions:
+The visible inbox tags are deliberately compact and equal-length so classified
+messages do not waste horizontal space or shift subject text by tier name length:
 
-- `TopTracks/Exceptional` — dark green
-- `TopTracks/Strong` — green
-- `TopTracks/Moderate` — yellow
-- `TopTracks/Marginal` — gray
-- `TopTracks/Parse Error` — red
+- `EXC` — Exceptional, dark green
+- `STR` — Strong, green
+- `MOD` — Moderate, yellow
+- `MAR` — Marginal, gray
+- `ERR` — Parse Error, red
 - `TopTracks/Processed` — hidden bookkeeping label
 
 Exceptional alerts are starred by default. Strong starring is configurable.
+During label provisioning, legacy visible labels such as `TopTracks/Exceptional`
+are renamed **in place** to their compact form. Because the Gmail label ID is
+preserved, already-classified messages update at the same time; they do not need
+to be reprocessed.
 
 ## Google Sheet and Settings UI
 
@@ -124,8 +129,8 @@ Sheets service failures receive short retries with backoff. If Sheet writing
 succeeds but Gmail labeling subsequently fails, stable Sheet record keys prevent
 duplicate rows on the retry.
 
-Deterministic parser/validation failures receive `TopTracks/Parse Error`, are
-logged, and are marked Processed. Unexpected Gmail/API/runtime failures remain
+Deterministic parser/validation failures receive the visible `ERR` classification,
+are logged, and are marked Processed. Unexpected Gmail/API/runtime failures remain
 unprocessed so later executions retry them.
 
 ## Configuration
@@ -151,9 +156,10 @@ npm test
 ```
 
 The regression suite covers sanitized real-world Keepa fixtures, tier boundaries,
-multi-offer ranking, Gmail exact-once behavior, label provisioning/colors,
-runtime retries, Sheet idempotency, Settings conversion/validation, spreadsheet
-formula-injection protection, and read-only historical preview safety.
+multi-offer ranking, Gmail exact-once behavior, label provisioning/colors and
+legacy-label migration, runtime retries, Sheet idempotency, Settings
+conversion/validation, spreadsheet formula-injection protection, and read-only
+historical preview safety.
 
 See `docs/architecture.md` and `test/fixtures/README.md` for the processing and
 fixture-safety contracts.
