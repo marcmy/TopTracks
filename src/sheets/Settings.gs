@@ -65,22 +65,29 @@ var TopTracksSettings = (function () {
     sheet.setColumnWidth(2, 190);
     sheet.setColumnWidth(3, 420);
 
-    sheet.getRange('A1:C1').merge();
+    if (!sheet.getRange('A1:C1').isPartOfMerge()) sheet.getRange('A1:C1').merge();
     sheet.getRange('A1')
       .setValue('TopTracks Settings')
       .setFontSize(16)
       .setFontWeight('bold');
-    sheet.getRange('A2:C2').merge();
+    if (!sheet.getRange('A2:C2').isPartOfMerge()) sheet.getRange('A2:C2').merge();
     sheet.getRange('A2')
       .setValue('Edit the blue cells. Valid changes apply automatically; no Apps Script editor needed.')
       .setFontStyle('italic');
 
     sheet.getRange('A3:C3').setValues([['Deal tier', 'Minimum below max', 'Meaning']]).setFontWeight('bold');
-    sheet.getRange('A4:C7').setValues([
-      ['Exceptional', sheet.getRange(CELLS.exceptionalDiscount).getValue(), 'Current price is at least this far below your Keepa max.'],
-      ['Strong', sheet.getRange(CELLS.strongDiscount).getValue(), 'Below Exceptional, at least this far below max.'],
-      ['Moderate', sheet.getRange(CELLS.moderateDiscount).getValue(), 'Below Strong, at least this far below max.'],
-      ['Marginal', '', 'Anything below the Moderate threshold, including an exact max-price match.']
+    sheet.getRange('A4').setValue('Exceptional');
+    sheet.getRange('A5').setValue('Strong');
+    sheet.getRange('A6').setValue('Moderate');
+    sheet.getRange('A7:C7').setValues([[
+      'Marginal',
+      '',
+      'Anything below the Moderate threshold, including an exact max-price match.'
+    ]]);
+    sheet.getRange('C4:C6').setValues([
+      ['Current price is at least this far below your Keepa max.'],
+      ['Below Exceptional, at least this far below max.'],
+      ['Below Strong, at least this far below max.']
     ]);
     sheet.getRange('B4:B6').setNumberFormat('0%');
 
@@ -92,10 +99,13 @@ var TopTracksSettings = (function () {
     sheet.getRange('B4:B6').setDataValidation(percentRule);
 
     sheet.getRange('A8:C8').setValues([['Gmail / history', 'Setting', 'What it does']]).setFontWeight('bold');
-    sheet.getRange('A9:C11').setValues([
-      ['Star Exceptional', sheet.getRange(CELLS.starExceptional).getValue(), 'Adds Gmail STARRED to Exceptional alerts.'],
-      ['Star Strong', sheet.getRange(CELLS.starStrong).getValue(), 'Adds Gmail STARRED to Strong alerts.'],
-      ['Spreadsheet history', sheet.getRange(CELLS.sheetLoggingEnabled).getValue(), 'Keep logging processed offers to TopTracks / Best Deals.']
+    sheet.getRange('A9').setValue('Star Exceptional');
+    sheet.getRange('A10').setValue('Star Strong');
+    sheet.getRange('A11').setValue('Spreadsheet history');
+    sheet.getRange('C9:C11').setValues([
+      ['Adds Gmail STARRED to Exceptional alerts.'],
+      ['Adds Gmail STARRED to Strong alerts.'],
+      ['Keep logging processed offers to TopTracks / Best Deals.']
     ]);
     sheet.getRange('B9:B11').insertCheckboxes();
 
@@ -112,24 +122,29 @@ var TopTracksSettings = (function () {
     sheet.getRange('A1:C14').setVerticalAlignment('middle');
   }
 
+  function seedValues(sheet, config) {
+    sheet.getRange(CELLS.exceptionalDiscount).setValue(ratioToDiscount(config.thresholds.exceptionalMaxRatio));
+    sheet.getRange(CELLS.strongDiscount).setValue(ratioToDiscount(config.thresholds.strongMaxRatio));
+    sheet.getRange(CELLS.moderateDiscount).setValue(ratioToDiscount(config.thresholds.moderateMaxRatio));
+    sheet.getRange(CELLS.starExceptional).setValue(Boolean(config.starExceptional));
+    sheet.getRange(CELLS.starStrong).setValue(Boolean(config.starStrong));
+    sheet.getRange(CELLS.sheetLoggingEnabled).setValue(Boolean(config.sheet.enabled));
+  }
+
   function ensureSheet(spreadsheet, config) {
     var sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    var created = false;
+    var needsSetup = false;
     if (!sheet) {
       sheet = spreadsheet.insertSheet(SHEET_NAME);
-      created = true;
+      needsSetup = true;
+    } else if (sheet.getLastRow() === 0) {
+      needsSetup = true;
     }
 
-    if (created || sheet.getLastRow() === 0) {
-      sheet.getRange(CELLS.exceptionalDiscount).setValue(ratioToDiscount(config.thresholds.exceptionalMaxRatio));
-      sheet.getRange(CELLS.strongDiscount).setValue(ratioToDiscount(config.thresholds.strongMaxRatio));
-      sheet.getRange(CELLS.moderateDiscount).setValue(ratioToDiscount(config.thresholds.moderateMaxRatio));
-      sheet.getRange(CELLS.starExceptional).setValue(Boolean(config.starExceptional));
-      sheet.getRange(CELLS.starStrong).setValue(Boolean(config.starStrong));
-      sheet.getRange(CELLS.sheetLoggingEnabled).setValue(Boolean(config.sheet.enabled));
+    if (needsSetup) {
+      seedValues(sheet, config);
+      applyFormatting(sheet);
     }
-
-    applyFormatting(sheet);
     return sheet;
   }
 
