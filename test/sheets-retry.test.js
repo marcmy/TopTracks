@@ -37,7 +37,7 @@ test('transient Sheets failures retry the same target row without duplicates', (
   assert.equal(appended, true);
   assert.equal(lastRowCalls, 1);
   assert.deepEqual(targetRows, [4, 4, 4]);
-  assert.deepEqual(writtenValues, [row]);
+  assert.deepEqual(Array.from(writtenValues, value => Array.from(value)), [row]);
   assert.equal(keys['m1:0'], true);
 });
 
