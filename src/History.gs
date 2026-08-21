@@ -90,7 +90,9 @@ function backfillTopTracksHistory(maxResults, queryOverride) {
 // deliberately fixed to a small batch so the mailbox owner can perform the safe
 // first-run sequence directly from the editor without changing code.
 function previewTopTracksHistory25() {
-  return TopTracksHistory.preview(25);
+  var result = TopTracksHistory.preview(25);
+  console.log(JSON.stringify(result, null, 2));
+  return result;
 }
 
 function backfillTopTracksHistory25() {
