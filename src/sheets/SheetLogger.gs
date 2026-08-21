@@ -163,7 +163,17 @@ var TopTracksSheetLogger = (function () {
     ensureSchema(main);
     ensureSchema(best);
 
-    return { spreadsheet: spreadsheet, mainSheet: main, bestDealsSheet: best };
+    var settings = null;
+    if (typeof TopTracksSettings !== 'undefined') {
+      settings = TopTracksSettings.ensureSheet(spreadsheet, config);
+    }
+
+    return {
+      spreadsheet: spreadsheet,
+      mainSheet: main,
+      bestDealsSheet: best,
+      settingsSheet: settings
+    };
   }
 
   function loadKeys(sheet) {
@@ -184,6 +194,7 @@ var TopTracksSheetLogger = (function () {
       spreadsheet: ensured.spreadsheet,
       mainSheet: ensured.mainSheet,
       bestDealsSheet: ensured.bestDealsSheet,
+      settingsSheet: ensured.settingsSheet,
       mainKeys: loadKeys(ensured.mainSheet),
       bestKeys: loadKeys(ensured.bestDealsSheet)
     };
