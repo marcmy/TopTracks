@@ -1,7 +1,7 @@
 var TOPTRACKS_CONFIG = Object.freeze({
   thresholds: Object.freeze({
-    exceptionalMaxRatio: 0.60,
-    strongMaxRatio: 0.80,
+    exceptionalMaxRatio: 0.50,
+    strongMaxRatio: 0.70,
     moderateMaxRatio: 0.90
   }),
   differenceTolerance: 0.011,
@@ -17,6 +17,7 @@ var TOPTRACKS_CONFIG = Object.freeze({
     spreadsheetName: 'TopTracks',
     mainSheetName: 'TopTracks',
     bestDealsSheetName: 'Best Deals',
+    settingsSheetName: 'Settings',
     spreadsheetIdProperty: 'TOPTRACKS_SHEET_ID'
   }),
   labels: Object.freeze({
@@ -166,6 +167,7 @@ var TopTracksConfig = (function () {
         spreadsheetName: TOPTRACKS_CONFIG.sheet.spreadsheetName,
         mainSheetName: TOPTRACKS_CONFIG.sheet.mainSheetName,
         bestDealsSheetName: TOPTRACKS_CONFIG.sheet.bestDealsSheetName,
+        settingsSheetName: TOPTRACKS_CONFIG.sheet.settingsSheetName,
         spreadsheetIdProperty: TOPTRACKS_CONFIG.sheet.spreadsheetIdProperty
       },
       labels: copyLabels(TOPTRACKS_CONFIG.labels)
@@ -189,9 +191,34 @@ var TopTracksConfig = (function () {
     return thresholds;
   }
 
+  function setUserSettings(settings) {
+    if (!settings) throw new Error('Settings are required.');
+    var thresholds = validateThresholds(settings.thresholds);
+    if (typeof PropertiesService === 'undefined') {
+      throw new Error('PropertiesService is only available in Google Apps Script.');
+    }
+
+    var values = {};
+    values[PROPERTY_NAMES.exceptionalMaxRatio] = String(thresholds.exceptionalMaxRatio);
+    values[PROPERTY_NAMES.strongMaxRatio] = String(thresholds.strongMaxRatio);
+    values[PROPERTY_NAMES.moderateMaxRatio] = String(thresholds.moderateMaxRatio);
+    values[PROPERTY_NAMES.starExceptional] = String(Boolean(settings.starExceptional));
+    values[PROPERTY_NAMES.starStrong] = String(Boolean(settings.starStrong));
+    values[PROPERTY_NAMES.sheetLoggingEnabled] = String(Boolean(settings.sheetLoggingEnabled));
+    PropertiesService.getScriptProperties().setProperties(values, false);
+
+    return {
+      thresholds: thresholds,
+      starExceptional: Boolean(settings.starExceptional),
+      starStrong: Boolean(settings.starStrong),
+      sheetLoggingEnabled: Boolean(settings.sheetLoggingEnabled)
+    };
+  }
+
   return {
     get: get,
     setThresholds: setThresholds,
+    setUserSettings: setUserSettings,
     validateThresholds: validateThresholds,
     _test: {
       parseBoolean: parseBoolean,
