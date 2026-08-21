@@ -73,6 +73,7 @@ var TopTracksParser = (function () {
   function extractOffers(tableHtml) {
     var rowMatches = String(tableHtml || '').match(/<tr\b[\s\S]*?<\/tr>/gi) || [];
     var offers = [];
+    var rawRows = [];
     var malformedRows = [];
 
     rowMatches.forEach(function (rowHtml) {
@@ -90,16 +91,24 @@ var TopTracksParser = (function () {
         return;
       }
 
-      offers.push({
+      var raw = {
         condition: stripHtml(cells[0]),
+        current: stripHtml(cells[1]),
+        desired: stripHtml(cells[2]),
+        difference: stripHtml(cells[3]),
+        cause: stripHtml(cells[4])
+      };
+      rawRows.push(raw);
+      offers.push({
+        condition: raw.condition,
         currentPrice: parseMoney(cells[1], true),
         desiredPrice: parseMoney(cells[2], false),
         keepaDifference: parseMoney(cells[3], false),
-        cause: stripHtml(cells[4])
+        cause: raw.cause
       });
     });
 
-    return { offers: offers, malformedRows: malformedRows };
+    return { offers: offers, rawRows: rawRows, malformedRows: malformedRows };
   }
 
   function fail(code, message, details) {
@@ -111,6 +120,27 @@ var TopTracksParser = (function () {
         details: details || []
       }
     };
+  }
+
+  function appendRawNumericDiagnostics(details, rowResult) {
+    rowResult.offers.forEach(function (offer, index) {
+      if (
+        isFinite(offer.currentPrice) &&
+        isFinite(offer.desiredPrice) &&
+        isFinite(offer.keepaDifference)
+      ) {
+        return;
+      }
+      var raw = rowResult.rawRows[index] || {};
+      details.push(
+        'Offer ' + (index + 1) + ' raw price row: ' +
+        'Current="' + (raw.current || '') + '", ' +
+        'Desired="' + (raw.desired || '') + '", ' +
+        'Difference="' + (raw.difference || '') + '", ' +
+        'Cause="' + (raw.cause || '') + '".'
+      );
+    });
+    return details;
   }
 
   function parseEmail(input, options) {
@@ -143,7 +173,11 @@ var TopTracksParser = (function () {
     if (typeof TopTracksValidation !== 'undefined') {
       var validation = TopTracksValidation.validateParsedEmail(parsed, options.differenceTolerance);
       if (!validation.ok) {
-        return fail('VALIDATION_FAILED', 'Parsed Keepa values failed validation.', validation.errors);
+        return fail(
+          'VALIDATION_FAILED',
+          'Parsed Keepa values failed validation.',
+          appendRawNumericDiagnostics(validation.errors.slice(), rowResult)
+        );
       }
     }
 
