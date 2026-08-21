@@ -18,6 +18,7 @@ var TopTracksGmailLabels = (function () {
 
   function needsPatch(label, definition) {
     if (
+      label.name !== definition.name ||
       label.messageListVisibility !== definition.messageListVisibility ||
       label.labelListVisibility !== definition.labelListVisibility
     ) {
@@ -29,6 +30,15 @@ var TopTracksGmailLabels = (function () {
         label.color.textColor !== definition.textColor;
     }
     return false;
+  }
+
+  function findExistingLabel(byName, definition) {
+    if (byName[definition.name]) return byName[definition.name];
+    var legacyNames = definition.legacyNames || [];
+    for (var i = 0; i < legacyNames.length; i += 1) {
+      if (byName[legacyNames[i]]) return byName[legacyNames[i]];
+    }
+    return null;
   }
 
   function ensureLabels(gmailService, config) {
@@ -43,14 +53,15 @@ var TopTracksGmailLabels = (function () {
     var ids = {};
     ORDER.forEach(function (key) {
       var definition = runtimeConfig.labels[key];
-      var label = byName[definition.name];
+      var label = findExistingLabel(byName, definition);
       if (!label) {
         label = gmail.Users.Labels.create(buildResource(definition), 'me');
-        byName[definition.name] = label;
       } else if (needsPatch(label, definition)) {
+        var oldName = label.name;
         label = gmail.Users.Labels.patch(buildResource(definition), 'me', label.id);
-        byName[definition.name] = label;
+        if (oldName !== definition.name) delete byName[oldName];
       }
+      byName[definition.name] = label;
       ids[key] = label.id;
     });
 
@@ -64,6 +75,7 @@ var TopTracksGmailLabels = (function () {
     _test: {
       buildResource: buildResource,
       needsPatch: needsPatch,
+      findExistingLabel: findExistingLabel,
       ORDER: ORDER
     }
   };

@@ -27,35 +27,40 @@ var TOPTRACKS_CONFIG = Object.freeze({
       labelListVisibility: 'labelShow'
     }),
     Exceptional: Object.freeze({
-      name: 'TopTracks/Exceptional',
+      name: 'EXC',
+      legacyNames: Object.freeze(['TopTracks/Exceptional']),
       messageListVisibility: 'show',
       labelListVisibility: 'labelShow',
       backgroundColor: '#0b804b',
       textColor: '#ffffff'
     }),
     Strong: Object.freeze({
-      name: 'TopTracks/Strong',
+      name: 'STR',
+      legacyNames: Object.freeze(['TopTracks/Strong']),
       messageListVisibility: 'show',
       labelListVisibility: 'labelShow',
       backgroundColor: '#16a766',
       textColor: '#ffffff'
     }),
     Moderate: Object.freeze({
-      name: 'TopTracks/Moderate',
+      name: 'MOD',
+      legacyNames: Object.freeze(['TopTracks/Moderate']),
       messageListVisibility: 'show',
       labelListVisibility: 'labelShow',
       backgroundColor: '#fad165',
       textColor: '#000000'
     }),
     Marginal: Object.freeze({
-      name: 'TopTracks/Marginal',
+      name: 'MAR',
+      legacyNames: Object.freeze(['TopTracks/Marginal']),
       messageListVisibility: 'show',
       labelListVisibility: 'labelShow',
       backgroundColor: '#efefef',
       textColor: '#666666'
     }),
     ParseError: Object.freeze({
-      name: 'TopTracks/Parse Error',
+      name: 'ERR',
+      legacyNames: Object.freeze(['TopTracks/Parse Error']),
       messageListVisibility: 'show',
       labelListVisibility: 'labelShow',
       backgroundColor: '#fb4c2f',
