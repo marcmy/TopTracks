@@ -7,7 +7,7 @@ const { loadGs } = require('./load-gs');
 const ctx = loadGs(['src/Config.gs', 'src/sheets/Settings.gs']);
 const settings = ctx.TopTracksSettings;
 
-test('Douglas 50/30/10 discount settings map to 0.50/0.70/0.90 price ratios', () => {
+test('50/30/10 discount settings map to 0.50/0.70/0.90 price ratios', () => {
   const parsed = settings._test.parseValues({
     exceptionalDiscount: 0.50,
     strongDiscount: 0.30,
