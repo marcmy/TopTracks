@@ -107,7 +107,8 @@ var TopTracksSettings = (function () {
       ['Adds Gmail STARRED to Strong alerts.'],
       ['Keep logging processed offers to TopTracks / Best Deals.']
     ]);
-    sheet.getRange('B9:B11').insertCheckboxes();
+    var checkboxRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+    sheet.getRange('B9:B11').setDataValidation(checkboxRule);
 
     sheet.getRange('A13').setValue('Validation');
     sheet.getRange(CELLS.status).setFormula(
