@@ -72,3 +72,13 @@ test('fails closed when Current/Desired/Difference do not reconcile', () => {
   assert.equal(parsed.ok, false);
   assert.equal(parsed.error.code, 'VALIDATION_FAILED');
 });
+
+test('validation error includes sanitized raw price row when a numeric cell is non-numeric', () => {
+  const input = readFixtureEml('boy-who-sailed');
+  input.htmlBody = input.htmlBody.replace('✓&nbsp;-2.09', 'N/A');
+  const parsed = ctx.TopTracksParser.parseEmail(input, { differenceTolerance: 0.011 });
+  assert.equal(parsed.ok, false);
+  assert.equal(parsed.error.code, 'VALIDATION_FAILED');
+  assert.ok(parsed.error.details.some((detail) => detail.includes('Keepa difference is invalid.')));
+  assert.ok(parsed.error.details.some((detail) => detail.includes('raw price row') && detail.includes('Difference="N/A"')));
+});
