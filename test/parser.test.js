@@ -82,3 +82,25 @@ test('validation error includes sanitized raw price row when a numeric cell is n
   assert.ok(parsed.error.details.some((detail) => detail.includes('Keepa difference is invalid.')));
   assert.ok(parsed.error.details.some((detail) => detail.includes('raw price row') && detail.includes('Difference="N/A"')));
 });
+
+test('Keepa dash-only Difference means exact zero difference', () => {
+  for (const dash of ['-', '–', '—', '−']) {
+    assert.equal(ctx.TopTracksParser._test.parseDifference(dash), 0);
+  }
+
+  const table = `
+    <thead><tr><th>Type</th><th>Current</th><th>Desired</th><th>Difference</th><th>Cause</th></tr></thead>
+    <tbody><tr>
+      <td>Used, good</td><td>$ 100.00</td><td>100.00</td><td>-</td><td>Desired price reached again</td>
+    </tr></tbody>`;
+  const rows = ctx.TopTracksParser._test.extractOffers(table);
+  assert.equal(rows.offers.length, 1);
+  assert.equal(rows.offers[0].currentPrice, 100);
+  assert.equal(rows.offers[0].desiredPrice, 100);
+  assert.equal(rows.offers[0].keepaDifference, 0);
+  assert.equal(ctx.TopTracksValidation.validateOffer(rows.offers[0], 0.011).ok, true);
+});
+
+test('blank Difference remains invalid rather than being inferred as zero', () => {
+  assert.ok(Number.isNaN(ctx.TopTracksParser._test.parseDifference('')));
+});

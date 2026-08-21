@@ -37,6 +37,17 @@ var TopTracksParser = (function () {
     return match ? Number(match[0]) : NaN;
   }
 
+  function parseDifference(value) {
+    var text = stripHtml(value).trim();
+    // Keepa renders an exact Current == Desired match as a lone dash rather
+    // than "0.00". Only the Difference column gets this special handling;
+    // blank or otherwise non-numeric values remain invalid and fail closed.
+    if (/^[-\u2010\u2011\u2012\u2013\u2014\u2212]$/.test(text)) {
+      return 0;
+    }
+    return parseMoney(value, false);
+  }
+
   function extractTitle(html) {
     var text = stripHtml(html);
     var match = text.match(/(?:The following prices|The .*? Price) for\s*"\s*(.*?)\s*"\s*on Amazon\.com/i);
@@ -103,7 +114,7 @@ var TopTracksParser = (function () {
         condition: raw.condition,
         currentPrice: parseMoney(cells[1], true),
         desiredPrice: parseMoney(cells[2], false),
-        keepaDifference: parseMoney(cells[3], false),
+        keepaDifference: parseDifference(cells[3]),
         cause: raw.cause
       });
     });
@@ -188,6 +199,7 @@ var TopTracksParser = (function () {
     parseEmail: parseEmail,
     _test: {
       stripHtml: stripHtml,
+      parseDifference: parseDifference,
       extractTitle: extractTitle,
       extractAsin: extractAsin,
       extractPricingTable: extractPricingTable,
