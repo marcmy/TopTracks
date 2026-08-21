@@ -189,10 +189,49 @@ var TopTracksSheetLogger = (function () {
     };
   }
 
+  function isTransientSpreadsheetError(error) {
+    var message = error && error.message ? error.message : String(error || '');
+    return /Service Spreadsheets failed|Service invoked too many times|Internal error|temporarily unavailable|timed out|try again/i.test(message);
+  }
+
+  function sleepForRetry(milliseconds) {
+    if (typeof Utilities !== 'undefined' && Utilities && typeof Utilities.sleep === 'function') {
+      Utilities.sleep(milliseconds);
+    }
+  }
+
+  function retryTransientSpreadsheetOperation(operation) {
+    var delays = [250, 750, 1500];
+    var attempt = 0;
+    while (true) {
+      try {
+        return operation();
+      } catch (error) {
+        if (!isTransientSpreadsheetError(error) || attempt >= delays.length) {
+          throw error;
+        }
+        console.warn(
+          'TopTracks transient Sheets error; retrying in ' + delays[attempt] + ' ms: ' +
+          (error && error.message ? error.message : String(error))
+        );
+        sleepForRetry(delays[attempt]);
+        attempt += 1;
+      }
+    }
+  }
+
   function appendIfMissing(sheet, keyMap, row) {
     var key = String(row[0]);
     if (keyMap[key]) return false;
-    sheet.appendRow(row);
+
+    // Use a fixed target row rather than appendRow(). If Google reports a
+    // transient failure after the write actually reached the server, retrying
+    // setValues() on the same row is idempotent and cannot create a duplicate.
+    var targetRow = sheet.getLastRow() + 1;
+    retryTransientSpreadsheetOperation(function () {
+      sheet.getRange(targetRow, 1, 1, row.length).setValues([row]);
+    });
+
     keyMap[key] = true;
     return true;
   }
@@ -253,7 +292,10 @@ var TopTracksSheetLogger = (function () {
       recordKey: recordKey,
       buildOfferRows: buildOfferRows,
       buildBestDealRow: buildBestDealRow,
-      buildParseErrorRow: buildParseErrorRow
+      buildParseErrorRow: buildParseErrorRow,
+      isTransientSpreadsheetError: isTransientSpreadsheetError,
+      retryTransientSpreadsheetOperation: retryTransientSpreadsheetOperation,
+      appendIfMissing: appendIfMissing
     }
   };
 })();
