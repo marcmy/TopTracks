@@ -39,12 +39,13 @@ The automatic pipeline searches a bounded set of Keepa messages without
 candidate is fetched by ID and its current label IDs are rechecked before parsing.
 
 Successful classification uses one Gmail message modification to add exactly one
-visible compact tier tag (`EXC`, `STR`, `MOD`, or `MAR`), remove the other visible
-classification tags, add `TopTracks/Processed`, and optionally add `STARRED`.
+visible tier label (`Exceptional`, `Strong`, `Moderate`, or `Marginal`), remove the
+other visible classification labels, add `TopTracks/Processed`, and optionally add
+`STARRED`.
 
-Parser/validation failures atomically receive `ERR` plus `TopTracks/Processed`.
-Unexpected Gmail/API/runtime failures remain unprocessed so a later run retries
-them.
+Parser/validation failures atomically receive `Parse Error` plus
+`TopTracks/Processed`. Unexpected Gmail/API/runtime failures remain unprocessed so
+a later run retries them.
 
 ## Sheet transaction boundary
 
@@ -95,20 +96,20 @@ to every processing cycle.
 
 ## Labels and colors
 
-Visible Gmail labels use compact three-character names so inbox subjects remain
-nearly flush-left regardless of tier:
+Visible Gmail labels use the full tier names without the `TopTracks/` prefix:
 
-- `EXC` — dark green Exceptional;
-- `STR` — green Strong;
-- `MOD` — yellow Moderate;
-- `MAR` — gray Marginal;
-- `ERR` — red Parse Error.
+- `Exceptional` — dark green;
+- `Strong` — green;
+- `Moderate` — yellow;
+- `Marginal` — gray;
+- `Parse Error` — red.
 
 `TopTracks/Processed` remains hidden bookkeeping state. During label provisioning,
-legacy visible names such as `TopTracks/Exceptional` are patched to the compact
-name using the same Gmail label ID. Existing messages therefore update in place
-without historical reprocessing. Label configuration is repaired idempotently
-during setup and every normal processing run.
+legacy visible names such as `TopTracks/Exceptional` are patched to the unprefixed
+name using the same Gmail label ID. Temporary compact names (`EXC`, `STR`, `MOD`,
+`MAR`, `ERR`) are also normalized to the full unprefixed names. Existing messages
+therefore update in place without historical reprocessing. Label configuration is
+repaired idempotently during setup and every normal processing run.
 
 ## Scheduling and concurrency
 

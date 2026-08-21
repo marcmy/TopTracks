@@ -18,7 +18,7 @@ The repository contains a production Apps Script implementation with:
 - fixture-driven Keepa HTML parsing with multiple offers per email;
 - fail-closed Current / Desired / Difference validation;
 - configurable scoring based primarily on percentage below max;
-- compact colored Gmail tier tags and hidden `TopTracks/Processed` exact-once state;
+- colored Gmail tier labels and hidden `TopTracks/Processed` exact-once state;
 - retry-safe one-minute Gmail processing with an Apps Script script lock;
 - one reusable `TopTracks` Google Sheet containing parsed offer history;
 - a `Best Deals` tab containing Strong/Exceptional winning offers;
@@ -30,21 +30,21 @@ mailbox exports are stored in this public repository.
 
 ## Gmail labels
 
-The visible inbox tags are deliberately compact and equal-length so classified
-messages do not waste horizontal space or shift subject text by tier name length:
+Visible inbox labels use the full tier names without the `TopTracks/` prefix:
 
-- `EXC` — Exceptional, dark green
-- `STR` — Strong, green
-- `MOD` — Moderate, yellow
-- `MAR` — Marginal, gray
-- `ERR` — Parse Error, red
+- `Exceptional` — dark green
+- `Strong` — green
+- `Moderate` — yellow
+- `Marginal` — gray
+- `Parse Error` — red
 - `TopTracks/Processed` — hidden bookkeeping label
 
 Exceptional alerts are starred by default. Strong starring is configurable.
 During label provisioning, legacy visible labels such as `TopTracks/Exceptional`
-are renamed **in place** to their compact form. Because the Gmail label ID is
-preserved, already-classified messages update at the same time; they do not need
-to be reprocessed.
+are renamed **in place** to `Exceptional`. Temporary compact names from an earlier
+migration (`EXC`, `STR`, `MOD`, `MAR`, `ERR`) are also normalized to the full
+unprefixed names. Because the Gmail label ID is preserved, already-classified
+messages update at the same time and do not need to be reprocessed.
 
 ## Google Sheet and Settings UI
 
@@ -129,9 +129,9 @@ Sheets service failures receive short retries with backoff. If Sheet writing
 succeeds but Gmail labeling subsequently fails, stable Sheet record keys prevent
 duplicate rows on the retry.
 
-Deterministic parser/validation failures receive the visible `ERR` classification,
-are logged, and are marked Processed. Unexpected Gmail/API/runtime failures remain
-unprocessed so later executions retry them.
+Deterministic parser/validation failures receive the visible `Parse Error`
+classification, are logged, and are marked Processed. Unexpected Gmail/API/runtime
+failures remain unprocessed so later executions retry them.
 
 ## Configuration
 
