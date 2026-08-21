@@ -39,6 +39,18 @@ var TopTracksGmailMessages = (function () {
 
   function decodeBodyData(data, utilities) {
     var util = utilities || Utilities;
+
+    // Gmail's REST representation is base64url, but Apps Script's Advanced
+    // Gmail service can deserialize MessagePartBody.data directly to Byte[].
+    // Accept both forms so the same code works in Apps Script and in tests.
+    if (Array.isArray(data)) {
+      return util.newBlob(data).getDataAsString('UTF-8');
+    }
+
+    if (typeof data !== 'string') {
+      throw new Error('Unsupported Gmail body data type: ' + typeof data);
+    }
+
     var bytes = util.base64DecodeWebSafe(data);
     return util.newBlob(bytes).getDataAsString('UTF-8');
   }
@@ -114,6 +126,7 @@ var TopTracksGmailMessages = (function () {
     _test: {
       buildPendingQuery: buildPendingQuery,
       getHeader: getHeader,
+      decodeBodyData: decodeBodyData,
       findHtmlBody: findHtmlBody,
       shouldStar: shouldStar
     }
