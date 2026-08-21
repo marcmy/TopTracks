@@ -16,12 +16,15 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
+      # Keep clasp itself on Node 20.20.2 for now. Current clasp OAuth refresh
+      # has a known incompatibility with newer Node lines carrying the
+      # http.Agent keep-alive security backport.
+      - name: Use Node.js 20.20.2 for clasp
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '20.20.2'
 
       - name: Run regression tests
         run: npm test
