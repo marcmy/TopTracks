@@ -1,0 +1,59 @@
+name: Deploy Apps Script
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: toptracks-apps-script-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run regression tests
+        run: npm test
+
+      - name: Configure clasp credentials
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          TOPTRACKS_SCRIPT_ID: ${{ secrets.TOPTRACKS_SCRIPT_ID }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "Missing required repository secret: CLASPRC_JSON" >&2
+            exit 1
+          fi
+          if [ -z "$TOPTRACKS_SCRIPT_ID" ]; then
+            echo "Missing required repository secret: TOPTRACKS_SCRIPT_ID" >&2
+            exit 1
+          fi
+
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          chmod 600 "$HOME/.clasprc.json"
+
+          node <<'NODE'
+          const fs = require('node:fs');
+          const scriptId = process.env.TOPTRACKS_SCRIPT_ID;
+          fs.writeFileSync(
+            '.clasp.json',
+            JSON.stringify({ scriptId, rootDir: '.' }, null, 2) + '\n'
+          );
+          NODE
+
+      - name: Show files that will be deployed
+        run: npx -y @google/clasp@3.3.0 show-file-status
+
+      - name: Push TopTracks to Apps Script
+        run: npx -y @google/clasp@3.3.0 push --force
