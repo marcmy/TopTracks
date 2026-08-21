@@ -85,3 +85,14 @@ function previewTopTracksHistory(maxResults, queryOverride) {
 function backfillTopTracksHistory(maxResults, queryOverride) {
   return TopTracksHistory.backfill(maxResults, queryOverride);
 }
+
+// Apps Script's Run button cannot supply function arguments. These wrappers are
+// deliberately fixed to a small batch so the mailbox owner can perform the safe
+// first-run sequence directly from the editor without changing code.
+function previewTopTracksHistory25() {
+  return TopTracksHistory.preview(25);
+}
+
+function backfillTopTracksHistory25() {
+  return TopTracksHistory.backfill(25);
+}
