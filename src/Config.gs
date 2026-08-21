@@ -1,7 +1,7 @@
 var TOPTRACKS_CONFIG = Object.freeze({
   thresholds: Object.freeze({
-    exceptionalMaxRatio: 0.60,
-    strongMaxRatio: 0.80,
+    exceptionalMaxRatio: 0.50,
+    strongMaxRatio: 0.70,
     moderateMaxRatio: 0.90
   }),
   differenceTolerance: 0.011,
