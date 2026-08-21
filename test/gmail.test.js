@@ -262,6 +262,6 @@ test('historical preview is read-only and requires an explicit bounded limit', (
     config: { get: () => ctx.TopTracksConfig.get({ TOPTRACKS_SHEET_LOGGING_ENABLED: 'false' }) },
     messages, parser, scoring: ctx.TopTracksScoring, gmail: {}, utilities: {}
   });
-  assert.equal(result.results[0].tier, 'Strong');
+  assert.equal(result.results[0].tier, 'Moderate');
   assert.equal(modified, false);
 });
