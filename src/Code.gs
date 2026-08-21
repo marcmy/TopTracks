@@ -56,6 +56,21 @@ var TopTracksUi = (function () {
     return lines.join('\n');
   }
 
+  function formatBackfill(result) {
+    return [
+      'TOPTRACKS CONTROLLED BACKFILL',
+      'Status: ' + (result.status || 'unknown'),
+      'Found: ' + Number(result.found || 0),
+      'Processed: ' + Number(result.processed || 0),
+      'Parse errors: ' + Number(result.parseErrors || 0),
+      'Runtime errors: ' + Number(result.runtimeErrors || 0),
+      'Sheet errors: ' + Number(result.sheetErrors || 0),
+      'Skipped: ' + Number(result.skipped || 0),
+      '',
+      'Run the same backfill control again to process the next unprocessed batch.'
+    ].join('\n');
+  }
+
   function logObject(label, value) {
     console.log(label + '\n' + JSON.stringify(value, null, 2));
     return value;
@@ -63,24 +78,32 @@ var TopTracksUi = (function () {
 
   return {
     formatPreview: formatPreview,
+    formatBackfill: formatBackfill,
     logObject: logObject
   };
 })();
 
 // Human-facing setup controls. During onboarding, keep src/Code.gs selected and
-// use these functions in numeric order. Normal day-to-day use happens in Gmail
-// and the TopTracks spreadsheet; the Apps Script editor is not the product UI.
+// use these functions in numeric order. Normal day-to-day use happens in Gmail;
+// the Apps Script editor is only the setup/backend surface.
 function TOPTRACKS_1_PREVIEW_25() {
   var result = TopTracksHistory.preview(25);
   console.log(TopTracksUi.formatPreview(result));
   return result;
 }
 
+function runTopTracksBackfillBatch(limit) {
+  var result = TopTracksHistory.backfill(limit);
+  console.log(TopTracksUi.formatBackfill(result));
+  return result;
+}
+
 function TOPTRACKS_2_BACKFILL_25() {
-  return TopTracksUi.logObject(
-    'TOPTRACKS CONTROLLED BACKFILL RESULT',
-    TopTracksHistory.backfill(25)
-  );
+  return runTopTracksBackfillBatch(25);
+}
+
+function TOPTRACKS_2_BACKFILL_100() {
+  return runTopTracksBackfillBatch(100);
 }
 
 function TOPTRACKS_3_INSTALL_AUTOMATION() {
